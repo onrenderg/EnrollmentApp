@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>ASP.NET web application:minimal API that serves an HTML form and handles form submissions for enrollment:.</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="copenhagen.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">ASP.NET web application:minimal API that serves an HTML form and handles form submissions for enrollment:.</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#program-initialization"><span class="toc-section-number">0.1</span> Program Initialization</a></li>
+<li><a href="#build-and-configure-the-application"><span class="toc-section-number">0.2</span> Build and Configure the Application</a></li>
+<li><a href="#define-database-connection-string"><span class="toc-section-number">0.3</span> Define Database Connection String</a></li>
+<li><a href="#define-routes-and-handlers"><span class="toc-section-number">0.4</span> Define Routes and Handlers</a>
+<ul>
+<li><a href="#route-to-display-enrollment-form"><span class="toc-section-number">0.4.1</span> Route to Display Enrollment Form</a></li>
+<li><a href="#route-to-handle-form-submission"><span class="toc-section-number">0.4.2</span> Route to Handle Form Submission</a></li>
+</ul></li>
+<li><a href="#run-the-application"><span class="toc-section-number">0.5</span> Run the Application</a></li>
+<li><a href="#setup"><span class="toc-section-number">0.6</span> Setup</a></li>
+<li><a href="#output"><span class="toc-section-number">0.7</span> Output</a></li>
+</ul>
+</nav>
+<h2 data-number="0.1" id="program-initialization"><span class="header-section-number">0.1</span> Program Initialization</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">using</span> Microsoft.<span class="fu">AspNetCore</span>.<span class="fu">Builder</span>; <span class="co">// Provides classes to create and configure an ASP.NET Core application.</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">using</span> Microsoft.<span class="fu">Extensions</span>.<span class="fu">Hosting</span>; <span class="co">// Provides classes for creating and managing the application&#39;s lifetime and environment.</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="kw">using</span> Npgsql; <span class="co">// Provides classes for interacting with PostgreSQL databases.</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="kw">using</span> System; <span class="co">// Basic system functions and types.</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="kw">using</span> System.<span class="fu">Threading</span>.<span class="fu">Tasks</span>; <span class="co">// Provides types that simplify the work of writing asynchronous code.</span></span></code></pre></div>
+<hr />
+<h2 data-number="0.2" id="build-and-configure-the-application"><span class="header-section-number">0.2</span> Build and Configure the Application</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="dt">var</span> builder = WebApplication.<span class="fu">CreateBuilder</span>(args); <span class="co">// Create and configure a new instance of the WebApplicationBuilder class.</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="dt">var</span> app = builder.<span class="fu">Build</span>(); <span class="co">// Build the WebApplication instance which is used to configure the request pipeline.</span></span></code></pre></div>
+<hr />
+<h2 data-number="0.3" id="define-database-connection-string"><span class="header-section-number">0.3</span> Define Database Connection String</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="dt">string</span> connectionString = <span class="st">&quot;Host=aws-0-ap-south-1.pooler.supabase.com;Port=5432;Username=postgres.pidvimlpfbtztwitweml;Password=MAY23/postgressql/v1;Database=postgres&quot;</span>; <span class="co">// Define the connection string to connect to the PostgreSQL database.</span></span></code></pre></div>
+<hr />
+<h2 data-number="0.4" id="define-routes-and-handlers"><span class="header-section-number">0.4</span> Define Routes and Handlers</h2>
+<h3 data-number="0.4.1" id="route-to-display-enrollment-form"><span class="header-section-number">0.4.1</span> Route to Display Enrollment Form</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a>app.<span class="fu">MapGet</span>(<span class="st">&quot;/&quot;</span>, async context =&gt;</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>{</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a>    <span class="dt">var</span> html = @<span class="st">&quot;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true"></a>        &lt;!DOCTYPE html&gt;</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true"></a>        &lt;html&gt;</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true"></a>        &lt;head&gt;</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true"></a>            &lt;title&gt;Enrollment Form&lt;/title&gt;</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true"></a>        &lt;/head&gt;</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true"></a>        &lt;body&gt;</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true"></a>            &lt;h1&gt;Add New Enrollment&lt;/h1&gt;</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true"></a>            &lt;form action=<span class="st">&quot;&quot;</span>/enrollments<span class="st">&quot;&quot;</span> method=<span class="st">&quot;&quot;</span>post<span class="st">&quot;&quot;</span>&gt;</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true"></a>                &lt;label <span class="kw">for</span>=<span class="st">&quot;&quot;</span>studentId<span class="st">&quot;&quot;</span>&gt;Student ID:&lt;/label&gt;</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true"></a>                &lt;input type=<span class="st">&quot;&quot;</span>number<span class="st">&quot;&quot;</span> id=<span class="st">&quot;&quot;</span>studentId<span class="st">&quot;&quot;</span> name=<span class="st">&quot;&quot;</span>StudentId<span class="st">&quot;&quot;</span> required&gt;&lt;br&gt;&lt;br&gt;</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true"></a>                &lt;label <span class="kw">for</span>=<span class="st">&quot;&quot;</span>studentName<span class="st">&quot;&quot;</span>&gt;Student Name:&lt;/label&gt;</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true"></a>                &lt;input type=<span class="st">&quot;&quot;</span>text<span class="st">&quot;&quot;</span> id=<span class="st">&quot;&quot;</span>studentName<span class="st">&quot;&quot;</span> name=<span class="st">&quot;&quot;</span>StudentName<span class="st">&quot;&quot;</span> required&gt;&lt;br&gt;&lt;br&gt;</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true"></a>                &lt;label <span class="kw">for</span>=<span class="st">&quot;&quot;</span>dateOfBirth<span class="st">&quot;&quot;</span>&gt;Date of Birth:&lt;/label&gt;</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true"></a>                &lt;input type=<span class="st">&quot;&quot;</span>date<span class="st">&quot;&quot;</span> id=<span class="st">&quot;&quot;</span>dateOfBirth<span class="st">&quot;&quot;</span> name=<span class="st">&quot;&quot;</span>DateOfBirth<span class="st">&quot;&quot;</span> required&gt;&lt;br&gt;&lt;br&gt;</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true"></a>                &lt;label <span class="kw">for</span>=<span class="st">&quot;&quot;</span>gender<span class="st">&quot;&quot;</span>&gt;Gender:&lt;/label&gt;</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true"></a>                &lt;select id=<span class="st">&quot;&quot;</span>gender<span class="st">&quot;&quot;</span> name=<span class="st">&quot;&quot;</span>Gender<span class="st">&quot;&quot;</span>&gt;</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true"></a>                    &lt;option value=<span class="st">&quot;&quot;</span>Male<span class="st">&quot;&quot;</span>&gt;Male&lt;/option&gt;</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true"></a>                    &lt;option value=<span class="st">&quot;&quot;</span>Female<span class="st">&quot;&quot;</span>&gt;Female&lt;/option&gt;</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true"></a>                    &lt;option value=<span class="st">&quot;&quot;</span>Other<span class="st">&quot;&quot;</span>&gt;Other&lt;/option&gt;</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true"></a>                &lt;/select&gt;&lt;br&gt;&lt;br&gt;</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true"></a>                &lt;label <span class="kw">for</span>=<span class="st">&quot;&quot;</span>address<span class="st">&quot;&quot;</span>&gt;Address:&lt;/label&gt;</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true"></a>                &lt;textarea id=<span class="st">&quot;&quot;</span>address<span class="st">&quot;&quot;</span> name=<span class="st">&quot;&quot;</span>Address<span class="st">&quot;&quot;</span> required&gt;&lt;/textarea&gt;&lt;br&gt;&lt;br&gt;</span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true"></a>                &lt;label <span class="kw">for</span>=<span class="st">&quot;&quot;</span>email<span class="st">&quot;&quot;</span>&gt;Email:&lt;/label&gt;</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true"></a>                &lt;input type=<span class="st">&quot;&quot;</span>email<span class="st">&quot;&quot;</span> id=<span class="st">&quot;&quot;</span>email<span class="st">&quot;&quot;</span> name=<span class="st">&quot;&quot;</span>Email<span class="st">&quot;&quot;</span> required&gt;&lt;br&gt;&lt;br&gt;</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true"></a>                &lt;label <span class="kw">for</span>=<span class="st">&quot;&quot;</span>phoneNumber<span class="st">&quot;&quot;</span>&gt;Phone Number:&lt;/label&gt;</span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true"></a>                &lt;input type=<span class="st">&quot;&quot;</span>tel<span class="st">&quot;&quot;</span> id=<span class="st">&quot;&quot;</span>phoneNumber<span class="st">&quot;&quot;</span> name=<span class="st">&quot;&quot;</span>PhoneNumber<span class="st">&quot;&quot;</span> required&gt;&lt;br&gt;&lt;br&gt;</span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true"></a>                &lt;label <span class="kw">for</span>=<span class="st">&quot;&quot;</span>courseId<span class="st">&quot;&quot;</span>&gt;Course ID:&lt;/label&gt;</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true"></a>                &lt;input type=<span class="st">&quot;&quot;</span>number<span class="st">&quot;&quot;</span> id=<span class="st">&quot;&quot;</span>courseId<span class="st">&quot;&quot;</span> name=<span class="st">&quot;&quot;</span>CourseId<span class="st">&quot;&quot;</span> required&gt;&lt;br&gt;&lt;br&gt;</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true"></a>                &lt;label <span class="kw">for</span>=<span class="st">&quot;&quot;</span>enrollmentDate<span class="st">&quot;&quot;</span>&gt;Enrollment Date:&lt;/label&gt;</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true"></a>                &lt;input type=<span class="st">&quot;&quot;</span>date<span class="st">&quot;&quot;</span> id=<span class="st">&quot;&quot;</span>enrollmentDate<span class="st">&quot;&quot;</span> name=<span class="st">&quot;&quot;</span>EnrollmentDate<span class="st">&quot;&quot;</span> required&gt;&lt;br&gt;&lt;br&gt;</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true"></a>                &lt;label <span class="kw">for</span>=<span class="st">&quot;&quot;</span>registrationDate<span class="st">&quot;&quot;</span>&gt;Registration Date:&lt;/label&gt;</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true"></a>                &lt;input type=<span class="st">&quot;&quot;</span>date<span class="st">&quot;&quot;</span> id=<span class="st">&quot;&quot;</span>registrationDate<span class="st">&quot;&quot;</span> name=<span class="st">&quot;&quot;</span>RegistrationDate<span class="st">&quot;&quot;</span> required&gt;&lt;br&gt;&lt;br&gt;</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true"></a>                &lt;button type=<span class="st">&quot;&quot;</span>submit<span class="st">&quot;&quot;</span>&gt;Submit&lt;/button&gt;</span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true"></a>            &lt;/form&gt;</span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true"></a>        &lt;/body&gt;</span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true"></a>        &lt;/html&gt;<span class="st">&quot;;</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true"></a>    await context.<span class="fu">Response</span>.<span class="fu">WriteAsync</span>(html); <span class="co">// Render the HTML form when the root URL is accessed.</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true"></a>});</span></code></pre></div>
+<hr />
+<h3 data-number="0.4.2" id="route-to-handle-form-submission"><span class="header-section-number">0.4.2</span> Route to Handle Form Submission</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>app.<span class="fu">MapPost</span>(<span class="st">&quot;/enrollments&quot;</span>, async context =&gt;</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a>{</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a>    <span class="dt">var</span> form = await context.<span class="fu">Request</span>.<span class="fu">ReadFormAsync</span>(); <span class="co">// Read form data from the request.</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a>    <span class="co">// Extract individual form fields</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a>    <span class="dt">var</span> studentId = form[<span class="st">&quot;StudentId&quot;</span>];</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a>    <span class="dt">var</span> studentName = form[<span class="st">&quot;StudentName&quot;</span>];</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a>    <span class="dt">var</span> dateOfBirth = form[<span class="st">&quot;DateOfBirth&quot;</span>];</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a>    <span class="dt">var</span> gender = form[<span class="st">&quot;Gender&quot;</span>];</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true"></a>    <span class="dt">var</span> address = form[<span class="st">&quot;Address&quot;</span>];</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true"></a>    <span class="dt">var</span> email = form[<span class="st">&quot;Email&quot;</span>];</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true"></a>    <span class="dt">var</span> phoneNumber = form[<span class="st">&quot;PhoneNumber&quot;</span>];</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true"></a>    <span class="dt">var</span> courseId = form[<span class="st">&quot;CourseId&quot;</span>];</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true"></a>    <span class="dt">var</span> enrollmentDate = form[<span class="st">&quot;EnrollmentDate&quot;</span>];</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true"></a>    <span class="dt">var</span> registrationDate = form[<span class="st">&quot;RegistrationDate&quot;</span>];</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true"></a>    await <span class="kw">using</span> <span class="dt">var</span> connection = <span class="kw">new</span> <span class="fu">NpgsqlConnection</span>(connectionString); <span class="co">// Establish a connection to the PostgreSQL database.</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true"></a>    await connection.<span class="fu">OpenAsync</span>(); <span class="co">// Open the database connection.</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true"></a></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true"></a>    <span class="dt">var</span> createTableQuery = @<span class="st">&quot;</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true"></a>        CREATE TABLE IF NOT EXISTS <span class="fu">testx</span> (</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true"></a>            StudentId INTEGER PRIMARY KEY,</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true"></a>            StudentName TEXT,</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true"></a>            DateOfBirth DATE,</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true"></a>            Gender TEXT,</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true"></a>            Address TEXT,</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true"></a>            Email TEXT,</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true"></a>            PhoneNumber TEXT,</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true"></a>            CourseId INTEGER,</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true"></a>            EnrollmentDate DATE,</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true"></a>            RegistrationDate DATE</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true"></a>        )<span class="st">&quot;; // SQL query to create the table if it does not exist.</span></span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true"></a></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true"></a>    await <span class="kw">using</span> (<span class="dt">var</span> createTableCmd = <span class="kw">new</span> <span class="fu">NpgsqlCommand</span>(createTableQuery, connection)) <span class="co">// Create a new NpgsqlCommand to execute the table creation query.</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true"></a>    {</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true"></a>        await createTableCmd.<span class="fu">ExecuteNonQueryAsync</span>(); <span class="co">// Execute the table creation query.</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true"></a>    }</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true"></a></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true"></a>    <span class="dt">var</span> insertQuery = @<span class="st">&quot;</span></span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true"></a>        INSERT INTO <span class="fu">testx</span> (StudentId, StudentName, DateOfBirth, Gender, Address, Email, PhoneNumber, CourseId, EnrollmentDate, RegistrationDate)</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true"></a>        <span class="fu">VALUES</span> (@StudentId, @StudentName, @DateOfBirth, @Gender, @Address, @Email, @PhoneNumber, @CourseId, @EnrollmentDate, @RegistrationDate)<span class="st">&quot;; // SQL query to insert form data into the table.</span></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true"></a></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true"></a>    await <span class="kw">using</span> (<span class="dt">var</span> cmd = <span class="kw">new</span> <span class="fu">NpgsqlCommand</span>(insertQuery, connection)) <span class="co">// Create a new NpgsqlCommand to execute the insert query.</span></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true"></a>    {</span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true"></a>        <span class="co">// Add parameters to the SQL query to prevent SQL injection.</span></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true"></a>        cmd.<span class="fu">Parameters</span>.<span class="fu">AddWithValue</span>(<span class="st">&quot;StudentId&quot;</span>, <span class="dt">int</span>.<span class="fu">Parse</span>(studentId));</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true"></a>        cmd.<span class="fu">Parameters</span>.<span class="fu">AddWithValue</span>(<span class="st">&quot;StudentName&quot;</span>, studentName.<span class="fu">ToString</span>());</span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true"></a>        cmd.<span class="fu">Parameters</span>.<span class="fu">AddWithValue</span>(<span class="st">&quot;DateOfBirth&quot;</span>, DateTime.<span class="fu">Parse</span>(dateOfBirth));</span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true"></a>        cmd.<span class="fu">Parameters</span>.<span class="fu">AddWithValue</span>(<span class="st">&quot;Gender&quot;</span>, gender.<span class="fu">ToString</span>());</span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true"></a>        cmd.<span class="fu">Parameters</span>.<span class="fu">AddWithValue</span>(<span class="st">&quot;Address&quot;</span>, address.<span class="fu">ToString</span>());</span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true"></a>        cmd.<span class="fu">Parameters</span>.<span class="fu">AddWithValue</span>(<span class="st">&quot;Email&quot;</span>, email.<span class="fu">ToString</span>());</span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true"></a>        cmd.<span class="fu">Parameters</span>.<span class="fu">AddWithValue</span>(<span class="st">&quot;PhoneNumber&quot;</span>, phoneNumber.<span class="fu">ToString</span>());</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true"></a>        cmd.<span class="fu">Parameters</span>.<span class="fu">AddWithValue</span>(<span class="st">&quot;CourseId&quot;</span>, <span class="dt">int</span>.<span class="fu">Parse</span>(courseId));</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true"></a>        cmd.<span class="fu">Parameters</span>.<span class="fu">AddWithValue</span>(<span class="st">&quot;EnrollmentDate&quot;</span>, DateTime.<span class="fu">Parse</span>(enrollmentDate));</span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true"></a>        cmd.<span class="fu">Parameters</span>.<span class="fu">AddWithValue</span>(<span class="st">&quot;RegistrationDate&quot;</span>, DateTime.<span class="fu">Parse</span>(registrationDate));</span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true"></a></span>
+<span id="cb5-57"><a href="#cb5-57" aria-hidden="true"></a>        await cmd.<span class="fu">ExecuteNonQueryAsync</span>(); <span class="co">// Execute the insert query.</span></span>
+<span id="cb5-58"><a href="#cb5-58" aria-hidden="true"></a>    }</span>
+<span id="cb5-59"><a href="#cb5-59" aria-hidden="true"></a></span>
+<span id="cb5-60"><a href="#cb5-60" aria-hidden="true"></a>    await context.<span class="fu">Response</span>.<span class="fu">WriteAsync</span>(<span class="st">&quot;Enrollment added successfully!&quot;</span>); <span class="co">// Return a success message to the user.</span></span>
+<span id="cb5-61"><a href="#cb5-61" aria-hidden="true"></a>});</span></code></pre></div>
+<hr />
+<h2 data-number="0.5" id="run-the-application"><span class="header-section-number">0.5</span> Run the Application</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode cs"><code class="sourceCode cs"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a>app.<span class="fu">Run</span>(); <span class="co">// Run the application and start listening for incoming HTTP requests.</span></span></code></pre></div>
+<hr />
+<h2 data-number="0.6" id="setup"><span class="header-section-number">0.6</span> Setup</h2>
+<ul>
+<li>Ensure you have the .NET SDK installed.</li>
+<li>Create a new ASP.NET Core project using the following command:</li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="ex">dotnet</span> new web -n Enrollx</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a><span class="bu">cd</span> Enrollx</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="ex">dotnet</span> add package Npgsql</span></code></pre></div>
+<ul>
+<li>Replace the Program.cs content with the provided code.</li>
+<li>Run the application using the following command:</li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="ex">dotnet</span> run</span></code></pre></div>
+<ul>
+<li>Compile for windows</li>
+</ul>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="bu">cd</span> path\to\your\project</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a><span class="ex">dotnet</span> publish -c Release -r win-x64 --self-contained</span></code></pre></div>
+<hr />
+<h2 data-number="0.7" id="output"><span class="header-section-number">0.7</span> Output</h2>
+<figure>
+<img src="./supabase.png" alt="" /><figcaption>PostgresSql db table screenshot</figcaption>
+</figure>
+</body>
+</html>
